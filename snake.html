@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Snake Game</title>
+  <style>
+    body { margin: 0; background: black; display: flex; justify-content: center; align-items: center; height: 100vh; }
+    canvas { background: #111; }
+  </style>
+</head>
+<body>
+<canvas width="800" height="800" id="game"></canvas>
+<script>
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const grid = 40;
+let snake = [{x: 160, y: 160}];
+let dx = grid, dy = 0;
+let food = {x: 320, y: 320};
+let score = 0;
+
+function gameLoop() {
+  requestAnimationFrame(gameLoop);
+
+  if (++count < 10) return;
+  count = 0;
+
+  const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+  snake.unshift(head);
+
+  if (head.x === food.x && head.y === food.y) {
+    food = {
+      x: Math.floor(Math.random() * 20) * grid,
+      y: Math.floor(Math.random() * 20) * grid
+    };
+    score++;
+  } else {
+    snake.pop();
+  }
+
+  if (head.x < 0 || head.y < 0 || head.x >= 400 || head.y >= 400 || snake.slice(1).some(s => s.x === head.x && s.y === head.y)) {
+    snake = [{x: 160, y: 160}];
+    dx = grid;
+    dy = 0;
+    score = 0;
+  }
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = 'lime';
+  snake.forEach(part => ctx.fillRect(part.x, part.y, grid-1, grid-1));
+  ctx.fillStyle = 'red';
+  ctx.fillRect(food.x, food.y, grid-1, grid-1);
+}
+let count = 0;
+requestAnimationFrame(gameLoop);
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft' && dx === 0) { dx = -grid; dy = 0; }
+  else if (e.key === 'ArrowUp' && dy === 0) { dx = 0; dy = -grid; }
+  else if (e.key === 'ArrowRight' && dx === 0) { dx = grid; dy = 0; }
+  else if (e.key === 'ArrowDown' && dy === 0) { dx = 0; dy = grid; }
+});
+</script>
+</body>
+</html>

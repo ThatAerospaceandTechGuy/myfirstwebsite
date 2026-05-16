@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pac-Man Clone</title>
+  <style>
+    body {
+      background: black;
+      color: white;
+      text-align: center;
+      font-family: sans-serif;
+    }
+    h1 {
+      margin: 1rem 0;
+    }
+    #game {
+      display: grid;
+      grid-template-columns: repeat(19, 20px);
+      grid-template-rows: repeat(21, 20px);
+      margin: 0 auto;
+      width: 380px;
+      height: 420px;
+    }
+    .cell {
+      width: 20px;
+      height: 20px;
+      box-sizing: border-box;
+    }
+    .wall {
+      background: #1d4ed8;
+    }
+    .dot {
+      background: black;
+      position: relative;
+    }
+    .dot::after {
+      content: '';
+      width: 4px;
+      height: 4px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 8px;
+      left: 8px;
+    }
+    .pacman {
+      background: yellow;
+      border-radius: 50%;
+    }
+    .ghost {
+      background: red;
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Pac-Man Clone</h1>
+<p>Use arrow keys to move</p>
+<div id="game"></div>
+
+<script>
+  const layout = [
+    // 0 = dot, 1 = wall
+    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+    1,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,1,
+    1,0,1,1,1,0,0,1,0,1,0,1,0,0,1,1,1,0,1,
+    1,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,1,
+    1,0,1,0,1,0,1,1,1,1,1,1,1,0,1,0,1,0,1,
+    1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,
+    1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,
+    1,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,1,
+    1,0,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,0,1,
+    1,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,1,
+    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+    // (Repeat or extend layout as needed for full grid)
+  ];
+
+  const game = document.getElementById('game');
+  const width = 19;
+  let pacmanIndex = 189;
+  let ghostIndex = 171;
+  const cells = [];
+
+  function createBoard() {
+    for (let i = 0; i < layout.length; i++) {
+      const div = document.createElement('div');
+      div.classList.add('cell');
+      if (layout[i] === 1) {
+        div.classList.add('wall');
+      } else {
+        div.classList.add('dot');
+      }
+      game.appendChild(div);
+      cells.push(div);
+    }
+    cells[pacmanIndex].classList.add('pacman');
+    cells[ghostIndex].classList.add('ghost');
+  }
+
+  function movePacman(e) {
+    cells[pacmanIndex].classList.remove('pacman');
+    const left = pacmanIndex % width !== 0;
+    const right = pacmanIndex % width < width - 1;
+    const up = pacmanIndex - width >= 0;
+    const down = pacmanIndex + width < layout.length;
+
+    if (e.key === 'ArrowLeft' && left && !cells[pacmanIndex - 1].classList.contains('wall')) {
+      pacmanIndex -= 1;
+    } else if (e.key === 'ArrowRight' && right && !cells[pacmanIndex + 1].classList.contains('wall')) {
+      pacmanIndex += 1;
+    } else if (e.key === 'ArrowUp' && up && !cells[pacmanIndex - width].classList.contains('wall')) {
+      pacmanIndex -= width;
+    } else if (e.key === 'ArrowDown' && down && !cells[pacmanIndex + width].classList.contains('wall')) {
+      pacmanIndex += width;
+    }
+
+    if (cells[pacmanIndex].classList.contains('dot')) {
+      cells[pacmanIndex].classList.remove('dot');
+    }
+
+    cells[pacmanIndex].classList.add('pacman');
+  }
+
+  document.addEventListener('keydown', movePacman);
+
+  createBoard();
+</script>
+
+</body>
+</html>

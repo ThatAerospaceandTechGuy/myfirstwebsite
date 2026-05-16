@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Aim Trainer</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 2rem;
+      text-align: center;
+    }
+    h1 { color: #333; }
+    #game-area {
+      position: relative;
+      margin: 2rem auto;
+      width: 600px;
+      height: 400px;
+      background: #e5e7eb;
+      border: 2px solid #333;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .target {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background: #4f46e5;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    #status {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Aim Trainer 🎯</h1>
+  <button onclick="startGame()">Start</button>
+  <div id="game-area"></div>
+  <p id="status">Click as many targets as you can in 30 seconds!</p>
+
+  <script>
+    const gameArea = document.getElementById('game-area');
+    const statusText = document.getElementById('status');
+    let score = 0;
+    let timeLeft = 30;
+    let timer;
+    let gameActive = false;
+
+    function startGame() {
+      score = 0;
+      timeLeft = 30;
+      gameActive = true;
+      statusText.textContent = 'Time: 30s | Score: 0';
+      spawnTarget();
+      timer = setInterval(() => {
+        timeLeft--;
+        statusText.textContent = `Time: ${timeLeft}s | Score: ${score}`;
+        if (timeLeft <= 0) endGame();
+      }, 1000);
+    }
+
+    function spawnTarget() {
+      if (!gameActive) return;
+
+      const target = document.createElement('div');
+      target.classList.add('target');
+      const x = Math.random() * (gameArea.clientWidth - 40);
+      const y = Math.random() * (gameArea.clientHeight - 40);
+      target.style.left = x + 'px';
+      target.style.top = y + 'px';
+      gameArea.innerHTML = '';
+      gameArea.appendChild(target);
+
+      target.addEventListener('click', () => {
+        score++;
+        statusText.textContent = `Time: ${timeLeft}s | Score: ${score}`;
+        spawnTarget();
+      });
+    }
+
+    function endGame() {
+      gameActive = false;
+      clearInterval(timer);
+      gameArea.innerHTML = '';
+      statusText.textContent = `⏱️ Time's up! Final Score: ${score}`;
+    }
+  </script>
+
+</body>
+</html>

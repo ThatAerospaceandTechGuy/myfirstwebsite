@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Flappy Bird</title>
+  <style>
+    body { margin: 0; background: #87CEEB; text-align: center; font-family: sans-serif; }
+    canvas { background: #fff; display: block; margin: 2rem auto; border: 2px solid #333; }
+    h1 { color: #333; }
+  </style>
+</head>
+<body>
+  <h1>Flappy Bird 🐦</h1>
+  <canvas id="game" width="400" height="600"></canvas>
+
+  <script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+
+    let bird = { x: 50, y: 150, width: 30, height: 30, gravity: 0.6, lift: -10, velocity: 0 };
+    let pipes = [];
+    let score = 0;
+    let frame = 0;
+
+    function drawBird() {
+      ctx.fillStyle = '#4f46e5';
+      ctx.fillRect(bird.x, bird.y, bird.width, bird.height);
+    }
+
+    function drawPipes() {
+      ctx.fillStyle = '#22c55e';
+      pipes.forEach(pipe => {
+        ctx.fillRect(pipe.x, 0, pipe.width, pipe.top);
+        ctx.fillRect(pipe.x, pipe.top + pipe.gap, pipe.width, canvas.height);
+      });
+    }
+
+    function updatePipes() {
+      if (frame % 90 === 0) {
+        let top = Math.random() * 200 + 50;
+        pipes.push({ x: canvas.width, width: 50, top: top, gap: 150 });
+      }
+
+      pipes.forEach(pipe => {
+        pipe.x -= 2;
+
+        if (
+          bird.x < pipe.x + pipe.width &&
+          bird.x + bird.width > pipe.x &&
+          (bird.y < pipe.top || bird.y + bird.height > pipe.top + pipe.gap)
+        ) {
+          alert('Game Over! Score: ' + score);
+          document.location.reload();
+        }
+
+        if (pipe.x + pipe.width === bird.x) score++;
+      });
+
+      pipes = pipes.filter(pipe => pipe.x + pipe.width > 0);
+    }
+
+    function update() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      bird.velocity += bird.gravity;
+      bird.y += bird.velocity;
+
+      if (bird.y + bird.height > canvas.height || bird.y < 0) {
+        alert('Game Over! Score: ' + score);
+        document.location.reload();
+      }
+
+      drawBird();
+      drawPipes();
+      updatePipes();
+
+      ctx.fillStyle = '#000';
+      ctx.fillText('Score: ' + score, 10, 20);
+
+      frame++;
+      requestAnimationFrame(update);
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.code === 'Space') {
+        bird.velocity = bird.lift;
+      }
+    });
+
+    update();
+  </script>
+</body>
+</html>

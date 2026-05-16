@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Home</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      color: #333;
+      text-align: center;
+      padding: 2rem;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    nav {
+      background-color: #4f46e5;
+      padding: 1rem;
+    }
+
+    nav a {
+      color: white;
+      margin: 0 1rem;
+      text-decoration: none;
+      font-weight: bold;
+      transition: transform 0.2s, text-decoration 0.3s;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+      transform: scale(1.1);
+    }
+
+    .typewriter {
+      font-size: 1.5rem;
+      border-right: 2px solid black;
+      white-space: nowrap;
+      overflow: hidden;
+      width: 0;
+      margin: 1rem auto;
+      animation: typing 3s steps(40, end) forwards, blink 0.75s step-end infinite;
+    }
+
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 100% }
+    }
+
+    @keyframes blink {
+      50% { border-color: transparent }
+    }
+
+    .toggle-btn {
+      background-color: #4f46e5;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      margin-top: 1rem;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+
+    .toggle-btn:hover {
+      background-color: #3730a3;
+    }
+
+    .dark-mode {
+      background-color: #1e1e1e;
+      color: #f0f0f0;
+    }
+
+    .dark-mode nav {
+      background-color: #2a2a6a;
+    }
+
+    .slideshow {
+      margin: 2rem auto;
+      max-width: 500px;
+      position: relative;
+    }
+
+    .slideshow img {
+      width: 100%;
+      display: none;
+      border-radius: 10px;
+    }
+
+    .slideshow img.active {
+      display: block;
+    }
+
+    .game-area {
+      margin: 2rem auto;
+      max-width: 300px;
+    }
+
+    .game-area button {
+      margin-top: 1rem;
+    }
+
+    form {
+      margin: 2rem auto;
+      max-width: 400px;
+      text-align: left;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .dark-mode input, .dark-mode textarea {
+      background-color: #333;
+      color: #fff;
+      border-color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="games.html">Games</a>
+    <a href="downloads.html">Downloads</a>
+  </nav>
+
+  <!-- Typewriter greeting -->
+  <div class="typewriter" id="greetingText"></div>
+
+  <p>This is the Home page.</p>
+  <p>Created by Albin</p>
+
+  <!-- Dark Mode Button -->
+  <button class="toggle-btn" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+
+  <!-- Slideshow -->
+  <div class="slideshow">
+    <img src="https://via.placeholder.com/500x300?text=Slide+1" class="active" alt="Slide 1">
+    <img src="https://via.placeholder.com/500x300?text=Slide+2" alt="Slide 2">
+    <img src="https://via.placeholder.com/500x300?text=Slide+3" alt="Slide 3">
+  </div>
+
+  <!-- Embedded Game: Guess a Number -->
+  <div class="game-area">
+    <h3>Mini Game: Guess the Number (1-10)</h3>
+    <input type="number" id="guessInput" placeholder="Enter a number (1-10)">
+    <button onclick="checkGuess()">Submit Guess</button>
+    <p id="gameResult"></p>
+  </div>
+
+  <!-- Contact Form -->
+  <form onsubmit="submitForm(event)">
+    <h3>Contact Me</h3>
+    <label>Name:</label>
+    <input type="text" required>
+    <label>Email:</label>
+    <input type="email" required>
+    <label>Message:</label>
+    <textarea rows="4" required></textarea>
+    <button type="submit" class="toggle-btn">Send</button>
+  </form>
+
+  <script>
+    // Typewriter greeting
+    const greeting = document.getElementById("greetingText");
+    const hour = new Date().getHours();
+    let message = "Welcome to My Website!";
+    if (hour < 12) {
+      message = "Good morning! Welcome to My Website!";
+    } else if (hour < 18) {
+      message = "Good afternoon! Welcome to My Website!";
+    } else {
+      message = "Good evening! Welcome to My Website!";
+    }
+    greeting.textContent = message;
+
+    // Dark Mode
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+    }
+
+    // Slideshow
+    const slides = document.querySelectorAll(".slideshow img");
+    let currentSlide = 0;
+    setInterval(() => {
+      slides[currentSlide].classList.remove("active");
+      currentSlide = (currentSlide + 1) % slides.length;
+      slides[currentSlide].classList.add("active");
+    }, 3000);
+
+    // Guessing Game
+    const randomNumber = Math.floor(Math.random() * 10) + 1;
+    function checkGuess() {
+      const guess = parseInt(document.getElementById("guessInput").value);
+      const result = document.getElementById("gameResult");
+      if (guess === randomNumber) {
+        result.textContent = "🎉 Correct! You guessed it!";
+      } else {
+        result.textContent = "❌ Try again!";
+      }
+    }
+
+    // Fake form submission
+    function submitForm(e) {
+      e.preventDefault();
+      alert("Message sent! (Not really — this is a demo)");
+    }
+  </script>
+
+</body>
+</html>

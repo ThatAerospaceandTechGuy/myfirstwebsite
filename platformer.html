@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mini Platformer</title>
+  <style>
+    body { margin: 0; background: #111; overflow: hidden; }
+    canvas { display: block; background: #1e293b; }
+  </style>
+</head>
+<body>
+
+<canvas id="game" width="800" height="400"></canvas>
+
+<script>
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+
+  const player = {
+    x: 50, y: 300, width: 30, height: 30,
+    vx: 0, vy: 0,
+    speed: 4, jump: -10,
+    grounded: false
+  };
+
+  const gravity = 0.5;
+  const platforms = [
+    { x: 0, y: 350, width: 800, height: 50 },
+    { x: 150, y: 280, width: 100, height: 10 },
+    { x: 300, y: 220, width: 100, height: 10 },
+    { x: 500, y: 150, width: 120, height: 10 },
+  ];
+
+  const keys = {};
+
+  document.addEventListener('keydown', e => keys[e.key] = true);
+  document.addEventListener('keyup', e => keys[e.key] = false);
+
+  function update() {
+    player.vx = 0;
+    if (keys['ArrowLeft']) player.vx = -player.speed;
+    if (keys['ArrowRight']) player.vx = player.speed;
+    if (keys['ArrowUp'] && player.grounded) {
+      player.vy = player.jump;
+      player.grounded = false;
+    }
+
+    player.vy += gravity;
+    player.x += player.vx;
+    player.y += player.vy;
+
+    player.grounded = false;
+    for (const p of platforms) {
+      if (
+        player.x < p.x + p.width &&
+        player.x + player.width > p.x &&
+        player.y + player.height < p.y + p.height &&
+        player.y + player.height + player.vy >= p.y
+      ) {
+        player.y = p.y - player.height;
+        player.vy = 0;
+        player.grounded = true;
+      }
+    }
+
+    // Keep player inside canvas
+    if (player.x < 0) player.x = 0;
+    if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+    if (player.y > canvas.height) {
+      player.x = 50;
+      player.y = 300;
+      player.vy = 0;
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw player
+    ctx.fillStyle = '#facc15';
+    ctx.fillRect(player.x, player.y, player.width, player.height);
+
+    // Draw platforms
+    ctx.fillStyle = '#94a3b8';
+    for (const p of platforms) {
+      ctx.fillRect(p.x, p.y, p.width, p.height);
+    }
+  }
+
+  function loop() {
+    update();
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  loop();
+</script>
+
+</body>
+</html>

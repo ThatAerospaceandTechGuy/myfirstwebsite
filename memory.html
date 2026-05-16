@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Memory Match</title>
+  <style>
+    body { font-family: sans-serif; background: #f4f4f4; text-align: center; padding: 2rem; }
+    h1 { color: #333; }
+    #board {
+      display: grid;
+      grid-template-columns: repeat(4, 80px);
+      gap: 10px;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+    .card {
+      width: 80px;
+      height: 80px;
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #d1d5db;
+      border-radius: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .card.revealed {
+      background: #fff;
+    }
+    .card.matched {
+      background: #4ade80;
+      color: white;
+      cursor: default;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Memory Match 🧠</h1>
+  <div id="board"></div>
+  <p id="status"></p>
+
+  <script>
+    const emojis = ['🍎', '🍌', '🍒', '🍇', '🍉', '🍑', '🍍', '🥝'];
+    let cards = [];
+    let first = null, second = null, lock = false, matchedCount = 0;
+    const board = document.getElementById('board');
+    const status = document.getElementById('status');
+
+    function shuffle(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+
+    function setupGame() {
+      const doubled = shuffle([...emojis, ...emojis]);
+      cards = doubled.map((emoji, index) => {
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.dataset.emoji = emoji;
+        div.dataset.index = index;
+        div.addEventListener('click', () => handleCardClick(div));
+        board.appendChild(div);
+        return div;
+      });
+    }
+
+    function handleCardClick(card) {
+      if (lock || card.classList.contains('matched') || card === first) return;
+
+      card.textContent = card.dataset.emoji;
+      card.classList.add('revealed');
+
+      if (!first) {
+        first = card;
+      } else {
+        second = card;
+        lock = true;
+
+        if (first.dataset.emoji === second.dataset.emoji) {
+          first.classList.add('matched');
+          second.classList.add('matched');
+          matchedCount += 2;
+          resetPair();
+          if (matchedCount === cards.length) {
+            status.textContent = '🎉 You Win!';
+          }
+        } else {
+          setTimeout(() => {
+            first.textContent = '';
+            second.textContent = '';
+            first.classList.remove('revealed');
+            second.classList.remove('revealed');
+            resetPair();
+          }, 800);
+        }
+      }
+    }
+
+    function resetPair() {
+      first = null;
+      second = null;
+      lock = false;
+    }
+
+    setupGame();
+  </script>
+
+</body>
+</html>
